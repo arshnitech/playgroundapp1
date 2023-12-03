@@ -1,0 +1,41 @@
+const AWS = require('aws-sdk');
+const alert = require('alert');
+const db = require('../db');
+// Set up AWS configuration
+AWS.config.update({
+  accessKeyId: 'AKIAZYUZDV42LA4BWK3B',
+  secretAccessKey: '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',
+  region: 'us-east-1'
+});
+
+const cognito = new AWS.CognitoIdentityServiceProvider();
+const iam = new AWS.IAM();
+// Assuming you have the username and new password
+
+
+    function changeIAMPassword(userName, newPassword) {
+      
+      
+        const params = {
+        UserName: userName,
+        Password: newPassword,
+       // MaxPasswordAge: 1, // Maximum password age in days
+      };
+    console.log('Received username and Password is : ' + params.UserName +','+params.Password)
+      iam.updateLoginProfile(params, (err, data) => {
+        if (err) {
+          console.error('Error updating IAM user password:', err);
+          return false;
+
+        } else {
+          console.log('Password updated successfully:', data);
+          
+          return data;
+              }
+      });
+    }
+    
+    module.exports = {
+      changeIAMPassword: changeIAMPassword
+    };
+ 

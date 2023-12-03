@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Home Page</title>
+  <style>
+    body {
+      background-color: whitesmoke;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+   
+      .content {
+  text-align: center;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .oval-button {
+      width: auto; /* Set width to auto to fit content */
+      height: 40px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 50px; /* Make it oval */
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    .oval-button:hover {
+      background-color: #0056b3;
+    }
+
+    .copy-button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 3px;
+      font-size: 12px;
+      cursor: pointer;
+      margin-left: 5px;
+      display: inline-block;
+    }
+    #passwordText {
+  display: inline-block; /* Ensures the span acts as a block but stays inline */
+  /* Additional styling properties as needed */
+       }
+    .copy-button:hover {
+      background-color: #45a049;
+    }
+
+    /* Style the Cloud URL and Cloud Username in blue */
+    .cloud-info {
+      color: #007bff;
+      display: inline-block;
+    }
+
+    /* Style for the oval-shaped green button */
+.green-oval-button {
+  display: inline-block;
+  padding: 10px 20px;
+  border-radius: 50px; /* Half of the button height for an oval shape */
+  background-color: green;
+  color: white;
+  text-decoration: none; /* Remove underline from the link */
+}
+
+.green-oval-button:hover {
+  /* Optional: Add a hover effect */
+  opacity: 0.8;
+}
+
+  </style>
+  <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, proxy-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+</head>
+<body>
+  <div class="content">
+    <h1>Welcome, <%= user.user_fname %></h1>
+    <!-- <p>User Email: <%= user.user_email %></p> -->
+    <button class="oval-button" id="infoButton">Show Cloud Credentials</button>
+    <div id="additionalInfo" style="display: none;">
+      <!-- <p><span class="cloud-info">Cloud URL:</span> <a href="<%= user.user_curl %>" target="_blank" class="cloud-info">Click to Access</a></p> -->
+      <p><span class="cloud-info">Cloud Username:</span> <span id="cloudUsername"><%= user.user_cloudusername %></span> <button class="copy-button" onclick="copyToClipboard('cloudUsername')">Copy</button></p>
+      
+      <!-- <p id="passwordText" style="display: none;" class="cloud-info">Cloud Password: <span id="cloudPassword"><%= user.user_cloudpass %></span> <button class="copy-button" onclick="copyToClipboard('cloudPassword')">Copy</button></p> -->
+      <p>
+        <span class="cloud-info">Cloud Password:</span>
+        <span id="passwordText" style="display: none"> <%= user.user_cloudpass %></span>
+        <button class="copy-button" onclick="copyToClipboard('cloudPassword')">Copy</button>
+      </p>
+      <button class="oval-button" id="passwordButton">Generate Password</button>
+
+      <button class="oval-button" id="updatePasswordButton" style="display: none">Update Password</button>
+      <div id="cloudURLButtonPlaceholder" style="display: none;">
+        <a href="<%= user.user_curl %>" target="_blank" class="green-oval-button">Start Lab</a>
+      </div> 
+    </div>
+    <form action="/logout" method="post">
+        <button type="submit" class="logout-button">Logout</button>
+    </form>
+  </div>
+</body>
+  <script>
+    const infoButton = document.getElementById('infoButton');
+    const additionalInfo = document.getElementById('additionalInfo');
+    const passwordButton = document.getElementById('passwordButton');
+    const passwordText = document.getElementById('passwordText');
+    const updatePasswordButton = document.getElementById('updatePasswordButton');
+
+    infoButton.addEventListener('click', () => {
+      infoButton.style.display = 'none'; // Hide the "Show Cloud Credentials" button
+      additionalInfo.style.display = 'block'; // Show the additional information
+    });
+
+    passwordButton.addEventListener('click', () => {
+        passwordButton.style.display = 'none'; 
+        passwordText.style.display = 'block';
+        updatePasswordButton.style.display= 'block';   
+    });
+
+    updatePasswordButton.addEventListener('click', () => {
+        updatePasswordButton.style.display = 'none'; 
+        try{
+        console.log("Entered update password block 1");  
+        const response=fetch('/updatePassword', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ /* Data to send to the server if needed */ }),
+    });
+    
+    if (response) {
+      // Password updated successfully, show the cloud URL button
+      showCloudURLButton();
+    } else {
+      // Handle unsuccessful password update
+      console.error('Password update failed');
+      // Display an error message or perform other actions as needed
+    }
+  } catch (error) {
+    console.error('Error updating password:', error);
+    // Handle fetch error
+  }
+  });
+    
+  function showCloudURLButton() {
+  // Show the cloud URL button
+  const cloudURLButtonPlaceholder = document.getElementById('cloudURLButtonPlaceholder');
+  if (cloudURLButtonPlaceholder) {
+    cloudURLButtonPlaceholder.style.display = 'block';
+  }
+}
+      
+    function copyToClipboard(elementId) {
+      const element = document.getElementById(elementId);
+      const text = element.innerText;
+
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      document.body.appendChild(textarea);
+
+      textarea.select();
+      document.execCommand('copy');
+
+      document.body.removeChild(textarea);
+    }
+  </script>
+</body>
+</html>
