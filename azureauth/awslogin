@@ -3,8 +3,8 @@ const alert = require('alert');
 const db = require('../db');
 // Set up AWS configuration
 AWS.config.update({
-  accessKeyId: 'AKIAZYUZDV42LA4BWK3B',
-  secretAccessKey: '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',
+  accessKeyId: 'AB',
+  secretAccessKey: 'RN6h',
   region: 'us-east-1'
 });
 
